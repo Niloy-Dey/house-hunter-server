@@ -24,14 +24,14 @@ async function run() {
     const newUsersCollection = client.db("niloydeyce").collection("newLoggedUser");
     const housesCollection = client.db("niloydeyce").collection("houses");
 
-    
-    
+
+
     // const ordersCollection = client.db("taja-jinis").collection("orderDetails");
     // const reviewCollection = client.db("taja-jinis").collection("review");
     // const userCollection = client.db("taja-jinis").collection("users");
-   
 
-   
+
+
     /* post method for adding new product */
     app.post("/users", async (req, res) => {
       const newUser = req.body;
@@ -39,13 +39,13 @@ async function run() {
       res.send(result);
     });
 
-    app.post("/loggedUser", async  (req, res) => {
+    app.post("/loggedUser", async (req, res) => {
       const newUser = req.body;
       const result = await newUsersCollection.insertOne(newUser);
       res.send(result);
     });
 
-      app.get("/users", async (req, res) => {
+    app.get("/users", async (req, res) => {
       const query = {};
       const cursor = usersCollection.find(query);
 
@@ -60,23 +60,19 @@ async function run() {
       const allHouse = await cursor.toArray();
       res.send(allHouse);
     });
-    app.get('/houses', (req, res) => {
-      const { city, bedrooms, bathrooms, size } = req.query;
-      let filteredHouses = houses;
-      if (city) {
-        filteredHouses = filteredHouses.filter(house => house.city === city);
-      }
-      if (bedrooms) {
-        filteredHouses = filteredHouses.filter(house => house.bedrooms.toString() === bedrooms);
-      }
-      if (bathrooms) {
-        filteredHouses = filteredHouses.filter(house => house.bathrooms.toString() === bathrooms);
-      }
-      if (size) {
-        filteredHouses = filteredHouses.filter(house => house.size === size);
-      }
-      res.json(filteredHouses);
+
+
+    app.get('/housec', (req, res) => {
+      const { page, limit } = req.query;
+      const pageNumber = parseInt(page);
+      const limitNumber = parseInt(limit);
+      const startIndex = (pageNumber - 1) * limitNumber;
+      const endIndex = pageNumber * limitNumber;
+      const paginatedHouses = houses.slice(startIndex, endIndex);
+      res.json(paginatedHouses);
     });
+
+
 
     // //  single data finding for showing
     // app.get("/product/:id", async (req, res) => {
@@ -252,9 +248,9 @@ async function run() {
 
 
 
-  } 
+  }
   finally {
-    
+
   }
 }
 run().catch(console.dir);
