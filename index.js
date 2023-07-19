@@ -23,6 +23,7 @@ async function run() {
     const usersCollection = client.db("niloydeyce").collection("users");
     const newUsersCollection = client.db("niloydeyce").collection("newLoggedUser");
     const housesCollection = client.db("niloydeyce").collection("houses");
+    const OrderCollection = client.db("niloydeyce").collection("orders");
 
 
 
@@ -38,17 +39,33 @@ async function run() {
       const result = await usersCollection.insertOne(newUser);
       res.send(result);
     });
+    app.post("/houses", async (req, res) => {
+      const newHouse = req.body;
+      const result = await housesCollection.insertOne(newHouse);
+      res.send(result);
+    });
 
     app.post("/loggedUser", async (req, res) => {
       const newUser = req.body;
       const result = await newUsersCollection.insertOne(newUser);
       res.send(result);
     });
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await OrderCollection.insertOne(order);
+      res.send(result);
+    });
+
+    app.get("/orders", async (req, res) => {
+      const query = {};
+      const cursor = OrderCollection.find(query);
+      const allOrders = await cursor.toArray();
+      res.send(allOrders);
+    });
 
     app.get("/users", async (req, res) => {
       const query = {};
       const cursor = usersCollection.find(query);
-
       const allUser = await cursor.toArray();
       res.send(allUser);
     });
@@ -73,14 +90,22 @@ async function run() {
     });
 
 
+    app.get("/bookingDetails/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await housesCollection.findOne(query);
+      res.send(product);
+    });
 
-    // //  single data finding for showing
-    // app.get("/product/:id", async (req, res) => {
+    // app.get('/bookingDetails/:id', (req, res) => {
+    //   // const { bookingId } = req.params;
     //   const id = req.params.id;
-    //   const query = { _id: ObjectId(id) };
-    //   const product = await productCollection.findOne(query);
-    //   res.send(product);
+    //   // const clickedProduct = allHouses.find(pd => pd._id === bookingId);
+    //   res.json(id);
     // });
+
+
+
 
     // /* post method for orders details */
     // app.post("/orderDetails", async (req, res) => {
